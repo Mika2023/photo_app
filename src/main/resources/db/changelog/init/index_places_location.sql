@@ -1,0 +1,1 @@
+CREATE INDEX idx_places_location ON places USING GIST(location);

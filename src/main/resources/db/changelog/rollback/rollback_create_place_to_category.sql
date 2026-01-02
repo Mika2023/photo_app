@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS place_to_category CASCADE;

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <include file="changelog/create_postgis_dependency.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/create_users.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/create_user_location.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/create_categories.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/create_places.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/index_places_location.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/create_place_to_category.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/create_tags.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/create_place_to_tag.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/create_photos.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/create_routes.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/create_route_places.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/create_favorite_places.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>
