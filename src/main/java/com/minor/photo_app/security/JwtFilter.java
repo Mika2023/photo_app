@@ -1,6 +1,8 @@
 package com.minor.photo_app.security;
 
+import com.minor.photo_app.dto.UserPrincipal;
 import com.minor.photo_app.entity.User;
+import com.minor.photo_app.mapper.UserMapper;
 import com.minor.photo_app.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,6 +22,7 @@ import java.util.List;
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -37,14 +40,15 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             Long userId = jwtService.extractUserId(token);
             User user = userRepository.findById(userId).orElseThrow();
+            UserPrincipal userPrincipal = userMapper.toUserPrincipal(user);
 
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    user,
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                    userPrincipal,
                     null,
                     List.of()
             );
 
-            SecurityContextHolder.getContext().setAuthentication(authToken);
+            SecurityContextHolder.getContext().setAuthentication(auth);
 
         } catch (Exception e) {
             SecurityContextHolder.clearContext();

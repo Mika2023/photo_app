@@ -7,8 +7,12 @@ spring:
     username: photo_user
     password: photo_password
   jpa:
+    show-sql: true
     hibernate:
       ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
   liquibase:
     enabled: true
     change-log: classpath:/db/master.xml

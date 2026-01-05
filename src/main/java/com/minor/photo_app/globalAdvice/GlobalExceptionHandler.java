@@ -1,6 +1,7 @@
 package com.minor.photo_app.globalAdvice;
 
 import com.minor.photo_app.dto.ErrorMessageDto;
+import com.minor.photo_app.exception.NotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,6 +71,17 @@ public class GlobalExceptionHandler {
         );
 
         return errors;
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorMessageDto> handleNotFoundException(NotFoundException ex) {
+        ErrorMessageDto response = new ErrorMessageDto()
+                .setTimestamp(Instant.now())
+                .setStatusCode(HttpStatus.NOT_FOUND.value())
+                .setMessage(ex.getMessage())
+                .setError("Объект не найден");
+
+        return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
     @ExceptionHandler(Exception.class)
