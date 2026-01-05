@@ -62,14 +62,6 @@ public class Place {
 
     @ManyToMany
     @JoinTable(
-            name = "place_to_category",
-            joinColumns = @JoinColumn(name = "place_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id")
-    )
-    private Set<Category> categories = new HashSet<>();
-
-    @ManyToMany
-    @JoinTable(
             name = "place_to_tag",
             joinColumns = @JoinColumn(name = "place_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
