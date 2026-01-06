@@ -15,4 +15,5 @@ public class PlacePhotoResponse {
     private String userName;
     private String imageUrl;
     private Instant createdAt;
+    private Boolean is_main;
 }

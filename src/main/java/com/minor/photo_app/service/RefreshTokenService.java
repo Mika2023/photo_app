@@ -62,6 +62,7 @@ public class RefreshTokenService {
         refreshTokenRepository.save(token);
     }
 
+    @Transactional(readOnly = true)
     public User getUserByToken(String refreshToken) {
         RefreshToken token = refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new AuthorizationDeniedException("Токен не найден"));

@@ -4,16 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryResponse {
+public class PlaceCardResponse {
     private Long id;
     private String name;
-    private String description;
-    private String image_url;
-    private Long parentId;
-    private Set<CategoryResponse> children;
+    private Boolean isFavorite;
+    private String mainImageUrl;
 }

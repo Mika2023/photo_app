@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.locationtech.jts.geom.Point;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Set;
 
 @Data
@@ -21,4 +22,5 @@ public class PlaceResponse {
     private BigDecimal visitCost;
     private Set<TagResponse> tags;
     private Set<PlacePhotoResponse> photos;
+    private Instant createdAt;
 }

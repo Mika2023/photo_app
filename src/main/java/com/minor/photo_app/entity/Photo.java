@@ -46,4 +46,7 @@ public class Photo {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
+
+    @Column(name = "is_main", nullable = false)
+    private Boolean isMain;
 }
