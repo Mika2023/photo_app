@@ -40,4 +40,17 @@ public class UserLocationService {
         UserLocation savedUserLocation = userLocationRepository.save(userLocation);
         return userLocationMapper.toUserLocationResponse(savedUserLocation);
     }
+
+    @Transactional(readOnly = true)
+    public Point getUserLocationPoint(UserPrincipal userPrincipal) {
+        Long userId = userPrincipal.getId();
+        User user = userService.getUserByPrincipal(userPrincipal);
+
+        Point location = new GeometryFactory(new PrecisionModel(), 4326)
+                .createPoint(new Coordinate(37.6214679, 55.7546469));
+
+        UserLocation userLocation = userLocationRepository.findByUserId(userId)
+                .orElseGet(() -> new UserLocation(userId, user, location, Instant.now()));
+        return userLocation.getLocation();
+    }
 }

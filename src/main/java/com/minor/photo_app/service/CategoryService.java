@@ -1,8 +1,9 @@
 package com.minor.photo_app.service;
 
-import com.minor.photo_app.dto.UserPrincipal;
+import com.minor.photo_app.dto.request.CategoryEditRequest;
+import com.minor.photo_app.dto.request.CategoryRequest;
 import com.minor.photo_app.dto.response.CategoryResponse;
-import com.minor.photo_app.dto.response.CategoryWithPlacesResponse;
+import com.minor.photo_app.dto.response.CategoryShortInfoResponse;
 import com.minor.photo_app.entity.Category;
 import com.minor.photo_app.exception.NotFoundException;
 import com.minor.photo_app.mapper.CategoryMapper;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -20,7 +22,6 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
-    private final FavoritePlaceService favoritePlaceService;
 
     @Transactional(readOnly = true)
     public List<CategoryResponse> getCategories() {
@@ -28,13 +29,102 @@ public class CategoryService {
         return categoryMapper.toResponseList(categories);
     }
 
+    public CategoryShortInfoResponse getCategoryById(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new NotFoundException("Категория с таким id не найдена - " + categoryId));
+
+        return categoryMapper.toResponseShort(category);
+    }
+
     @Transactional(readOnly = true)
-    public CategoryWithPlacesResponse getCategoryById(Long categoryId, UserPrincipal userPrincipal) {
-        Category category = categoryRepository.findByIdWithPlaces(categoryId)
-                .orElseThrow(() -> new NotFoundException("Категория не найдена"));
+    public List<CategoryShortInfoResponse> getChildrenById(Long categoryId) {
+        if (!categoryRepository.existsById(categoryId)) {
+            throw new NotFoundException("Категория с таким id не найдена - " + categoryId);
+        }
 
-        Set<Long> favoritePlaces = favoritePlaceService.getFavoritePlacesByUser(userPrincipal);
+        List<Category> children = categoryRepository.findAllByParentId(categoryId);
+        return categoryMapper.toResponseShortList(children);
+    }
 
-        return categoryMapper.toResponseWithPlaces(category, favoritePlaces);
+    @Transactional
+    public CategoryResponse createCategory(CategoryRequest request) {
+        Category category = categoryMapper.toEntity(request);
+
+        if (request.getParentId() != null) {
+            Category parent = categoryRepository.findById(request.getParentId())
+                    .orElseThrow(() -> new NotFoundException(
+                            String.format("Родительской категории с таким id = %d не существует",
+                                    request.getParentId())
+                    ));
+
+            category.setParent(parent);
+        }
+
+        Category saved = categoryRepository.save(category);
+        return categoryMapper.toResponse(saved);
+    }
+
+    @Transactional
+    public CategoryResponse setChildrenToCategory(List<CategoryRequest> children, Long parentId) {
+        Category parent = categoryRepository.findById(parentId)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("Родительской категории с таким id = %d не существует", parentId)
+                ));
+
+        List<Category> categories = categoryMapper.toEntityList(children);
+        categories.forEach(parent::addChild);
+
+        Category saved = categoryRepository.save(parent);
+        return categoryMapper.toResponse(saved);
+    }
+
+    @Transactional
+    public CategoryResponse editCategory(Long categoryId, CategoryEditRequest request) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("Категории с таким id = %d не существует", categoryId)
+                ));
+        categoryMapper.updateCategoryFromRequest(request, category);
+        return categoryMapper.toResponse(category);
+    }
+
+    @Transactional(readOnly = true)
+    public Set<Category> getExistCategoriesByIds(List<Long> categoryIds) {
+        Set<Category> result = new HashSet<>();
+
+        for (Long categoryId: categoryIds) {
+            Category category = categoryRepository.findById(categoryId)
+                    .orElseThrow(() -> new NotFoundException(
+                            String.format("Категории с таким id = %d не существует", categoryId)
+                    ));
+
+            extendCategoryListByParents(category, result);
+        }
+
+        return result;
+    }
+
+    @Transactional(readOnly = true)
+    public Category getCategoryFromId(Long categoryId) {
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("Категории с таким id = %d не существует", categoryId)
+                ));
+    }
+
+    @Transactional
+    public void deleteCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new NotFoundException(String.format("Категории с таким id = %d не существует",
+                        categoryId)));
+        categoryRepository.delete(category);
+    }
+
+    private void extendCategoryListByParents(Category category, Set<Category> result) {
+        Category current = category;
+
+        while (current != null && result.add(current)) {
+            current = current.getParent();
+        }
     }
 }

@@ -8,8 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
@@ -50,24 +48,18 @@ public class Category {
     private String description;
 
     @Column(name = "image_url")
-    private String image_url;
-
-    @Column(name = "parent_id")
-    private Long parentId;
+    private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Category parent;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @BatchSize(size = 20)
     private Set<Category> children = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "place_to_category",
-            joinColumns = @JoinColumn(name = "category_id"),
-            inverseJoinColumns = @JoinColumn(name = "place_id")
-    )
-    private Set<Place> places = new HashSet<>();
+    public void addChild(Category child) {
+        children.add(child);
+        child.setParent(this);
+    }
 }

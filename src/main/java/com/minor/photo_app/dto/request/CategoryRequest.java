@@ -1,18 +1,18 @@
-package com.minor.photo_app.dto.response;
+package com.minor.photo_app.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class CategoryWithPlacesResponse {
-    private Long id;
+@AllArgsConstructor
+public class CategoryRequest {
+
+    @NotBlank
     private String name;
     private String description;
+    private String imageUrl;
     private Long parentId;
-    private Set<PlaceCardResponse> places;
 }

@@ -90,7 +90,7 @@ public class GlobalExceptionHandler {
         ErrorMessageDto response = new ErrorMessageDto()
                 .setTimestamp(Instant.now())
                 .setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .setMessage("Ошибка сервера")
+                .setMessage(ex.getMessage())
                 .setError("Ошибка сервера");
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

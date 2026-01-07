@@ -24,7 +24,7 @@ public class FavoritePlaceService {
 
         Set<FavoritePlace> favoritePlaces = favoritePlaceRepository.findAllByUser(user);
         if (favoritePlaces == null || favoritePlaces.isEmpty()) {
-            throw new NotFoundException("У пользователя нет избранных мест");
+            return Set.of();
         }
 
         return favoritePlaces.stream()
