@@ -8,6 +8,7 @@ import com.minor.photo_app.dto.request.PlaceUpdateRequest;
 import com.minor.photo_app.dto.response.PlaceCardResponse;
 import com.minor.photo_app.dto.response.PlaceResponse;
 import com.minor.photo_app.service.PlaceService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,7 +37,7 @@ public class PlaceController {
 
     @PostMapping("/search")
     public List<PlaceCardResponse> getPlaceBySearch(@AuthenticationPrincipal UserPrincipal userPrincipal,
-                                                    @RequestBody PlaceSearchRequest placeSearchRequest) {
+                                                    @RequestBody @Valid PlaceSearchRequest placeSearchRequest) {
         return placeService.getPlacesBySearch(userPrincipal, placeSearchRequest);
     }
 

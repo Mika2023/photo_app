@@ -1,5 +1,6 @@
 package com.minor.photo_app.dto.request;
 
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -27,9 +28,11 @@ public class PlaceCreationRequest {
     private BigDecimal visitCost;
 
     @NotNull
+    @Digits(integer = 3, fraction = 6)
     private Double latitude;
 
     @NotNull
+    @Digits(integer = 3, fraction = 6)
     private Double longitude;
 
     @NotEmpty

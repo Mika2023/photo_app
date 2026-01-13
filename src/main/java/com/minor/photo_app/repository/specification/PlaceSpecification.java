@@ -60,7 +60,9 @@ public final class PlaceSpecification {
         return (root, query, criteriaBuilder) -> {
 
             if (days==null || days.isEmpty()) {
-                String jsonPathFilter = String.format("$.*[*] ? (@.from < \"%s\" && @.to > \"%s\")", to, from);
+                String jsonPathFilter = String.format("$.*[*] ? (@.from < \"%s\" && @.to > \"%s\")",
+                        to == null ? LocalTime.MAX : to,
+                        from == null ? LocalTime.MIN : from);
                 return criteriaBuilder.isTrue(
                         criteriaBuilder.function(
                                 "jsonb_path_exists",
@@ -76,8 +78,8 @@ public final class PlaceSpecification {
                 String dayNameShort = day.name().substring(0, 3).toLowerCase();
                 String jsonPathFilter = String.format("$.%s[*] ? (@.from < \"%s\" && @.to > \"%s\")",
                         dayNameShort,
-                        to,
-                        from);
+                        to == null ? LocalTime.MAX : to,
+                        from == null ? LocalTime.MIN : from);
 
 
                 dayPredicates.add(criteriaBuilder.isTrue(
@@ -105,7 +107,7 @@ public final class PlaceSpecification {
            selectedStops.forEach((transportType, stops) -> {
                if (stops != null) {
                    for (String stop: stops) {
-                       String jsonPathFilter = String.format("$.%s[*] ? (@ == \"%s\"",
+                       String jsonPathFilter = String.format("$.%s[*] ? (@ == \"%s\")",
                                transportType.getType(),
                                stop
                        );

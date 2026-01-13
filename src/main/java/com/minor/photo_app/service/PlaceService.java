@@ -44,14 +44,17 @@ public class PlaceService {
     private final UserLocationService userLocationService;
     private final FavoritePlaceService favoritePlaceService;
     private final CategoryService categoryService;
-    private static final double RADIUS_METERS = 200.0;
+    private static final double RADIUS_METERS = 1000.0;
     private static final int LIMIT_PLACES = 10;
 
     private Slice<PlaceCardResponse> getFilteredPlaces(Specification<Place> spec,
-                                                      int page,
-                                                      int size,
+                                                      Integer page,
+                                                      Integer size,
                                                       PlaceSort sort,
                                                       UserPrincipal userPrincipal) {
+        page = page == null ? 0 : page;
+        size = size == null ? 10 : size;
+        sort = sort == null ? PlaceSort.DEFAULT : sort;
         Pageable pageable = PageRequest.of(page, size+1);
 
         List<Place> places = switch (sort) {
@@ -73,13 +76,31 @@ public class PlaceService {
                 Double lat = userLocation.getY();
                 yield placeRepository.findAll((root, query, cb) -> {
                     Expression<Double> distance = cb.function(
-                            "ST_DistanceSphere",
+                            "ST_Distance",
                             Double.class,
-                            root.get("location"),
+
                             cb.function(
-                                    "ST_MakePoint", Object.class,
-                                    cb.literal(lon),
-                                    cb.literal(lat)
+                                    "ST_Transform",
+                                    Object.class,
+                                    root.get("location"),
+                                    cb.literal(3857)
+                            ),
+
+                            cb.function(
+                                    "ST_Transform",
+                                    Object.class,
+                                    cb.function(
+                                            "ST_SetSRID",
+                                            Object.class,
+                                            cb.function(
+                                                    "ST_MakePoint",
+                                                    Object.class,
+                                                    cb.literal(lon),
+                                                    cb.literal(lat)
+                                            ),
+                                            cb.literal(4326)
+                                    ),
+                                    cb.literal(3857)
                             )
                     );
                     query.orderBy(cb.asc(distance));
@@ -96,12 +117,13 @@ public class PlaceService {
             default -> placeRepository.findAll(spec, pageable).getContent();
         };
 
-        Set<Long> placeFavoriteIds = favoritePlaceService.getFavoritePlacesByUser(userPrincipal);
-        List<PlaceCardResponse> response = placeMapper.toCardResponseList(places, placeFavoriteIds)
-                .stream()
-                .limit(size)
-                .toList();
         boolean hasNext = places.size() > size;
+        if (hasNext) {
+            places = places.subList(0, size);
+        }
+
+        Set<Long> placeFavoriteIds = favoritePlaceService.getFavoritePlacesByUser(userPrincipal);
+        List<PlaceCardResponse> response = placeMapper.toCardResponseList(places, placeFavoriteIds);
         return new SliceImpl<>(response, PageRequest.of(page, size), hasNext);
     }
 
@@ -115,7 +137,8 @@ public class PlaceService {
         }
 
         if (placeFilter.getIsFavoriteByUser() != null && userPrincipal.getId() != null) {
-            specification = specification.and(PlaceSpecification.isFavoriteByUserId(userPrincipal.getId()));
+            if (placeFilter.getIsFavoriteByUser())
+                specification = specification.and(PlaceSpecification.isFavoriteByUserId(userPrincipal.getId()));
         }
 
         if (placeFilter.getSelectedStops() != null) {

@@ -1,5 +1,6 @@
 package com.minor.photo_app.dto.request;
 
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,7 +18,11 @@ public class PlaceUpdateRequest {
     private String description;
     private Map<String, List<String>> locationDescription;
     private Map<String, List<Map<String, String>>>  workingHours;
+
+    @Digits(integer = 3, fraction = 6)
     private Double latitude;
+
+    @Digits(integer = 3, fraction = 6)
     private Double longitude;
 
     @Min(value = 0)

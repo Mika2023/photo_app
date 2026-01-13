@@ -22,6 +22,6 @@ public class PlaceFilter {
     private Boolean isFavoriteByUser;
 
     private PlaceSort sort;
-    private int page = 0;
-    private int size = 10;
+    private Integer page;
+    private Integer size;
 }

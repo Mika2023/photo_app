@@ -16,11 +16,11 @@ public interface PlaceRepository extends JpaRepository<Place, Long>, JpaSpecific
 
     @Query(value = """
         SELECT p.*
-        FROM place p
+        FROM places p
         WHERE p.id <> :placeId
           AND ST_DWithin(
-                p.location::geography,
-                ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography,
+                p.location::geometry,
+                ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geometry,
                 :radiusMeters
           )
         LIMIT :limit
