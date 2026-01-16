@@ -5,6 +5,7 @@ import com.minor.photo_app.dto.request.PlaceCreationRequest;
 import com.minor.photo_app.dto.request.PlaceUpdateRequest;
 import com.minor.photo_app.dto.response.PlaceCardResponse;
 import com.minor.photo_app.dto.response.PlaceResponse;
+import com.minor.photo_app.dto.response.PlaceShortResponse;
 import com.minor.photo_app.entity.Photo;
 import com.minor.photo_app.entity.Place;
 import org.locationtech.jts.geom.Point;
@@ -47,6 +48,9 @@ public interface PlaceMapper {
     @Mapping(target = "favoritePlaceUsers", ignore = true)
     @Mapping(target = "tags", ignore = true)
     Place toEntity(PlaceCreationRequest request);
+
+    PlaceShortResponse toShortResponse(Place place);
+    List<PlaceShortResponse> toShortResponseList(List<Place> places);
 
     void updatePlace(PlaceUpdateRequest request, @MappingTarget Place place);
 

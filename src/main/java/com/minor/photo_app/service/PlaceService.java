@@ -1,6 +1,5 @@
 package com.minor.photo_app.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.minor.photo_app.dto.UserPrincipal;
 import com.minor.photo_app.dto.filters.PlaceFilter;
 import com.minor.photo_app.dto.request.PlaceCreationRequest;
@@ -8,6 +7,7 @@ import com.minor.photo_app.dto.request.PlaceSearchRequest;
 import com.minor.photo_app.dto.request.PlaceUpdateRequest;
 import com.minor.photo_app.dto.response.PlaceCardResponse;
 import com.minor.photo_app.dto.response.PlaceResponse;
+import com.minor.photo_app.dto.response.PlaceShortResponse;
 import com.minor.photo_app.entity.Category;
 import com.minor.photo_app.entity.FavoritePlace;
 import com.minor.photo_app.entity.Place;
@@ -57,18 +57,18 @@ public class PlaceService {
         sort = sort == null ? PlaceSort.DEFAULT : sort;
         Pageable pageable = PageRequest.of(page, size+1);
 
-        List<Place> places = switch (sort) {
+        Slice<Place> places = switch (sort) {
             case NEWEST -> {
                 pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-                yield placeRepository.findAll(spec,pageable).getContent();
+                yield placeRepository.findAll(spec,pageable);
             }
             case PRICE_ASC -> {
                 pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "visitCost"));
-                yield placeRepository.findAll(spec,pageable).getContent();
+                yield placeRepository.findAll(spec,pageable);
             }
             case PRICE_DESC -> {
                 pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "visitCost"));
-                yield placeRepository.findAll(spec,pageable).getContent();
+                yield placeRepository.findAll(spec,pageable);
             }
             case CLOSEST -> {
                 Point userLocation = userLocationService.getUserLocationPoint(userPrincipal);
@@ -105,7 +105,7 @@ public class PlaceService {
                     );
                     query.orderBy(cb.asc(distance));
                     return spec.toPredicate(root, query, cb);
-                }, pageable).getContent();
+                }, pageable);
             }
             case POPULARITY ->
                 placeRepository.findAll((root, query, cb) -> {
@@ -113,18 +113,12 @@ public class PlaceService {
                     Join<Place, FavoritePlace> join = root.join("favoritePlaceUsers", JoinType.LEFT);
                     query.orderBy(cb.desc(cb.count(join.get("user"))));
                     return spec.toPredicate(root, query, cb);
-                }, pageable).getContent();
-            default -> placeRepository.findAll(spec, pageable).getContent();
+                }, pageable);
+            default -> placeRepository.findAll(spec, pageable);
         };
 
-        boolean hasNext = places.size() > size;
-        if (hasNext) {
-            places = places.subList(0, size);
-        }
-
-        Set<Long> placeFavoriteIds = favoritePlaceService.getFavoritePlacesByUser(userPrincipal);
-        List<PlaceCardResponse> response = placeMapper.toCardResponseList(places, placeFavoriteIds);
-        return new SliceImpl<>(response, PageRequest.of(page, size), hasNext);
+        Set<Long> placeFavoriteIds = favoritePlaceService.getFavoritePlaceIdsByUser(userPrincipal);
+        return places.map(place -> placeMapper.toCardResponse(place, placeFavoriteIds));
     }
 
     @Transactional(readOnly = true)
@@ -192,7 +186,7 @@ public class PlaceService {
         Place place = placeRepository.findById(placeId)
                 .orElseThrow(() -> new NotFoundException("Место не найдено по id: " + placeId));
 
-        Set<Long> placeFavoriteIds = favoritePlaceService.getFavoritePlacesByUser(userPrincipal);
+        Set<Long> placeFavoriteIds = favoritePlaceService.getFavoritePlaceIdsByUser(userPrincipal);
         return placeMapper.toResponse(place, placeFavoriteIds);
     }
 
@@ -209,7 +203,7 @@ public class PlaceService {
         place.getCategories().addAll(categories);
 
         Place saved = placeRepository.save(place);
-        Set<Long> favoritePlacesIds = favoritePlaceService.getFavoritePlacesByUser(userPrincipal);
+        Set<Long> favoritePlacesIds = favoritePlaceService.getFavoritePlaceIdsByUser(userPrincipal);
         return placeMapper.toResponse(saved, favoritePlacesIds);
     }
 
@@ -220,7 +214,7 @@ public class PlaceService {
 
         placeMapper.updatePlace(request, place);
 
-        Set<Long> favoritePlacesIds = favoritePlaceService.getFavoritePlacesByUser(userPrincipal);
+        Set<Long> favoritePlacesIds = favoritePlaceService.getFavoritePlaceIdsByUser(userPrincipal);
         return placeMapper.toResponse(place, favoritePlacesIds);
     }
 
@@ -273,7 +267,19 @@ public class PlaceService {
     }
 
     private List<PlaceCardResponse> getPlaceCardResponses(UserPrincipal userPrincipal, List<Place> places) {
-        Set<Long> placeFavoriteIds = favoritePlaceService.getFavoritePlacesByUser(userPrincipal);
+        Set<Long> placeFavoriteIds = favoritePlaceService.getFavoritePlaceIdsByUser(userPrincipal);
         return placeMapper.toCardResponseList(places, placeFavoriteIds);
+    }
+
+    @Transactional(readOnly = true)
+    public Place getPlace(Long placeId) {
+        return placeRepository.findById(placeId).orElseThrow(() ->
+                new NotFoundException(String.format("Место по id = %s не найдено", placeId)));
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlaceShortResponse> getAllPlaces() {
+        List<Place> places = placeRepository.findAll();
+        return placeMapper.toShortResponseList(places);
     }
 }

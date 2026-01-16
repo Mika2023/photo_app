@@ -4,6 +4,7 @@ import com.minor.photo_app.dto.UserPrincipal;
 import com.minor.photo_app.entity.User;
 import com.minor.photo_app.mapper.UserMapper;
 import com.minor.photo_app.repository.UserRepository;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,7 +50,10 @@ public class JwtFilter extends OncePerRequestFilter {
             );
 
             SecurityContextHolder.getContext().setAuthentication(auth);
-
+        } catch (JwtException e) {
+            SecurityContextHolder.clearContext();
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
         }

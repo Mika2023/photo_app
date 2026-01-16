@@ -7,6 +7,7 @@ import com.minor.photo_app.dto.request.PlaceSearchRequest;
 import com.minor.photo_app.dto.request.PlaceUpdateRequest;
 import com.minor.photo_app.dto.response.PlaceCardResponse;
 import com.minor.photo_app.dto.response.PlaceResponse;
+import com.minor.photo_app.dto.response.PlaceShortResponse;
 import com.minor.photo_app.service.PlaceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -74,5 +75,10 @@ public class PlaceController {
     @DeleteMapping("/{placeId}/categories")
     public void removeCategoryFromPlace(@PathVariable Long placeId, @RequestParam Long categoryId) {
         placeService.removeCategoryFromPlace(placeId, categoryId);
+    }
+
+    @GetMapping
+    public List<PlaceShortResponse> getAllPlaces() {
+        return placeService.getAllPlaces();
     }
 }

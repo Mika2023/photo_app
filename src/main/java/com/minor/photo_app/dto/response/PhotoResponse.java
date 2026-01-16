@@ -9,11 +9,9 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PlacePhotoResponse {
+public class PhotoResponse {
     private Long id;
-    private Long placeId;
-    private String userName;
     private String imageUrl;
     private Instant createdAt;
-    private Boolean isMain;
+    private PlaceShortResponse place;
 }

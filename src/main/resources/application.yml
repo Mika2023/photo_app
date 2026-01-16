@@ -23,3 +23,6 @@ server:
   servlet:
     context-path: /
   port: 8081
+
+storage:
+  upload-dir: ./images
