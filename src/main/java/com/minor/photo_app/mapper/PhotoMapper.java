@@ -9,7 +9,7 @@ import org.mapstruct.Mapping;
 
 import java.util.Set;
 
-@Mapper(componentModel = "spring", uses = {PlaceMapper.class})
+@Mapper(componentModel = "spring")
 public interface PhotoMapper {
 
     @Mapping(target = "placeId", source = "place.id")
@@ -18,7 +18,8 @@ public interface PhotoMapper {
 
     Set<PlacePhotoResponse> toSetPlacePhotoResponse(Set<Photo> photos);
 
-    @Mapping(target = "place", source = "place")
+    @Mapping(target = "place.id", source = "place.id")
+    @Mapping(target = "place.name", source = "place.name")
     PhotoResponse toPhotoResponse(Photo photo);
 
     Photo toEntity(PhotoCreateRequest request);

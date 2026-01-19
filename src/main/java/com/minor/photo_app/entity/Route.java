@@ -47,7 +47,7 @@ public class Route {
     @Column(name = "description")
     private String description;
 
-    @Column(columnDefinition = "geography(LineString,4326)")
+    @Column(columnDefinition = "geometry(LineString,4326)")
     private LineString path;
 
     @CreationTimestamp

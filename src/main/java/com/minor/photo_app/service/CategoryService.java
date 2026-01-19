@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,6 +49,13 @@ public class CategoryService {
 
     @Transactional
     public CategoryResponse createCategory(CategoryRequest request) {
+        Category category = prepareCategoryToInsert(request);
+
+        Category saved = categoryRepository.save(category);
+        return categoryMapper.toResponse(saved);
+    }
+
+    private Category prepareCategoryToInsert(CategoryRequest request) {
         Category category = categoryMapper.toEntity(request);
 
         if (request.getParentId() != null) {
@@ -59,9 +67,18 @@ public class CategoryService {
 
             category.setParent(parent);
         }
+        return category;
+    }
 
-        Category saved = categoryRepository.save(category);
-        return categoryMapper.toResponse(saved);
+    @Transactional
+    public List<CategoryShortInfoResponse> createCategories(List<CategoryRequest> requests) {
+        requests = requests.stream()
+                .filter(r -> Boolean.FALSE.equals(categoryRepository.existsByName(r.getName()))).toList();
+
+        List<Category> categories = new ArrayList<>();
+        requests.forEach(r -> categories.add(prepareCategoryToInsert(r)));
+        List<Category> saved = categoryRepository.saveAll(categories);
+        return categoryMapper.toResponseShortList(saved);
     }
 
     @Transactional

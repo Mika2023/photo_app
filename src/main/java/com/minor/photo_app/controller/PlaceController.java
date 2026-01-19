@@ -10,9 +10,11 @@ import com.minor.photo_app.dto.response.PlaceResponse;
 import com.minor.photo_app.dto.response.PlaceShortResponse;
 import com.minor.photo_app.service.PlaceService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +29,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/places")
 @RequiredArgsConstructor
+@Validated
 public class PlaceController {
     private final PlaceService placeService;
 
@@ -65,6 +68,12 @@ public class PlaceController {
     public PlaceResponse createPlace(@AuthenticationPrincipal UserPrincipal userPrincipal,
                                      @RequestBody PlaceCreationRequest request) {
         return placeService.createPlace(request, userPrincipal);
+    }
+
+    @PostMapping("/all")
+    public void createPlaceList(@AuthenticationPrincipal UserPrincipal userPrincipal,
+                                     @RequestBody @NotEmpty List<PlaceCreationRequest> requests) {
+        placeService.createPlaceList(requests, userPrincipal);
     }
 
     @DeleteMapping("/{placeId}")

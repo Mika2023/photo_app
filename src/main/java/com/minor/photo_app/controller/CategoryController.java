@@ -45,6 +45,11 @@ public class CategoryController {
         return categoryService.createCategory(categoryRequest);
     }
 
+    @PostMapping("/all")
+    public List<CategoryShortInfoResponse> createCategories(@RequestBody @NotEmpty List<CategoryRequest> requests) {
+        return categoryService.createCategories(requests);
+    }
+
     @PostMapping("/{categoryId}")
     public CategoryResponse updateCategory(@PathVariable Long categoryId, @RequestBody CategoryEditRequest request) {
         return categoryService.editCategory(categoryId, request);

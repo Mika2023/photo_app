@@ -24,15 +24,17 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -42,7 +44,11 @@ public class PlaceService {
     private final PlaceMapper placeMapper;
     private final PlaceRepository placeRepository;
     private final UserLocationService userLocationService;
-    private final FavoritePlaceService favoritePlaceService;
+
+    @Autowired
+    @Lazy
+    private FavoritePlaceService favoritePlaceService;
+
     private final CategoryService categoryService;
     private static final double RADIUS_METERS = 1000.0;
     private static final int LIMIT_PLACES = 10;
@@ -192,6 +198,22 @@ public class PlaceService {
 
     @Transactional
     public PlaceResponse createPlace(PlaceCreationRequest request, UserPrincipal userPrincipal) {
+        Place place = preparePlaceToInsert(request);
+
+        Place saved = placeRepository.save(place);
+        Set<Long> favoritePlacesIds = favoritePlaceService.getFavoritePlaceIdsByUser(userPrincipal);
+        return placeMapper.toResponse(saved, favoritePlacesIds);
+    }
+
+    @Transactional
+    public void createPlaceList(List<PlaceCreationRequest> request, UserPrincipal userPrincipal) {
+        List<Place> places = new ArrayList<>();
+        request.forEach(p -> places.add(preparePlaceToInsert(p)));
+
+        placeRepository.saveAll(places);
+    }
+
+    private Place preparePlaceToInsert(PlaceCreationRequest request) {
         Place place = placeMapper.toEntity(request);
 
         Point location = new GeometryFactory(new PrecisionModel(), 4326)
@@ -201,10 +223,7 @@ public class PlaceService {
 
         Set<Category> categories = categoryService.getExistCategoriesByIds(request.getCategoryIds());
         place.getCategories().addAll(categories);
-
-        Place saved = placeRepository.save(place);
-        Set<Long> favoritePlacesIds = favoritePlaceService.getFavoritePlaceIdsByUser(userPrincipal);
-        return placeMapper.toResponse(saved, favoritePlacesIds);
+        return place;
     }
 
     @Transactional
