@@ -1,0 +1,2 @@
+ALTER TABLE routes
+ALTER COLUMN to_place_id SET NOT NULL;

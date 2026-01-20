@@ -28,5 +28,7 @@
     <include file="changelog/v0.0.8_places.xml" relativeToChangelogFile="true"/>
     <include file="changelog/v0.0.8_user_location.xml" relativeToChangelogFile="true"/>
     <include file="changelog/v0.0.9.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/v0.1.0.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/v0.1.1.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

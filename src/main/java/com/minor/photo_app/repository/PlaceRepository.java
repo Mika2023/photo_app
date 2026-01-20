@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PlaceRepository extends JpaRepository<Place, Long>, JpaSpecificationExecutor<Place> {
@@ -33,5 +34,5 @@ public interface PlaceRepository extends JpaRepository<Place, Long>, JpaSpecific
                                  @Param("limit") int limit);
 
     @Query(value = "SELECT location FROM places WHERE id = :id", nativeQuery = true)
-    Point findLocationById(@Param("id") Long id);
+    Optional<Point> findLocationById(@Param("id") Long id);
 }

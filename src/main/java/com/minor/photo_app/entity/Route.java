@@ -1,6 +1,5 @@
 package com.minor.photo_app.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -18,10 +16,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Point;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "routes")
@@ -54,6 +51,21 @@ public class Route {
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
 
-    @OneToMany(mappedBy = "route", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<RoutePlace> routePlaces = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "to_place_id", nullable = false)
+    private Place toPlace;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "from_place_id")
+    private Place fromPlace;
+
+    //если fromPlace null, то используем геопозицию пользователя
+    @Column(name = "from_location")
+    private Point fromLocation;
+
+    @Column(name = "distance_meters")
+    private Integer distanceMeters;
+
+    @Column(name = "estimated_time_minutes")
+    private Integer estimatedTimeMinutes;
 }

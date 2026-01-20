@@ -173,11 +173,9 @@ public class PlaceService {
 
     @Transactional(readOnly = true)
     public List<PlaceCardResponse> findPlacesNearby(Long placeId, UserPrincipal userPrincipal) {
-        if (!placeRepository.existsById(placeId)) {
-            throw new NotFoundException("Место не найдено по id: " + placeId);
-        }
 
-        Point location = placeRepository.findLocationById(placeId);
+        Point location = placeRepository.findLocationById(placeId)
+                .orElseThrow(() -> new NotFoundException("Координаты места не найдены по id: " + placeId));
         List<Place> places = placeRepository.findPlacesNearby(placeId,
                 location.getY(),
                 location.getX(),
@@ -294,6 +292,12 @@ public class PlaceService {
     public Place getPlace(Long placeId) {
         return placeRepository.findById(placeId).orElseThrow(() ->
                 new NotFoundException(String.format("Место по id = %s не найдено", placeId)));
+    }
+
+    @Transactional(readOnly = true)
+    public Point getPlacePoint(Long placeId) {
+        return placeRepository.findLocationById(placeId).orElseThrow(() ->
+                new NotFoundException(String.format("Координаты места по id = %s не найдены", placeId)));
     }
 
     @Transactional(readOnly = true)

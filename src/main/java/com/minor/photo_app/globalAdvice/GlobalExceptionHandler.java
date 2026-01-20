@@ -1,7 +1,9 @@
 package com.minor.photo_app.globalAdvice;
 
 import com.minor.photo_app.dto.ErrorMessageDto;
+import com.minor.photo_app.exception.MapApiException;
 import com.minor.photo_app.exception.NotFoundException;
+import com.minor.photo_app.exception.PhotoAppException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -80,6 +82,28 @@ public class GlobalExceptionHandler {
                 .setStatusCode(HttpStatus.NOT_FOUND.value())
                 .setMessage(ex.getMessage())
                 .setError("Объект не найден");
+
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
+    @ExceptionHandler(PhotoAppException.class)
+    public ResponseEntity<ErrorMessageDto> handlePhotoAppException(PhotoAppException ex) {
+        ErrorMessageDto response = new ErrorMessageDto()
+                .setTimestamp(Instant.now())
+                .setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .setMessage(ex.getMessage())
+                .setError("Объект не найден");
+
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
+    @ExceptionHandler(MapApiException.class)
+    public ResponseEntity<ErrorMessageDto> handleMapApiException(MapApiException ex) {
+        ErrorMessageDto response = new ErrorMessageDto()
+                .setTimestamp(Instant.now())
+                .setStatusCode(ex.getStatusCode().value())
+                .setMessage(ex.getMessage())
+                .setError("Ошибка API карт");
 
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }

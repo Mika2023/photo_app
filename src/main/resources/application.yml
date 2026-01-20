@@ -26,3 +26,8 @@ server:
 
 storage:
   upload-dir: ./images
+
+gis:
+  maps:
+    base-url: "https://routing.api.2gis.com/routing"
+    api-key: ${2GIS_API_KEY}
