@@ -20,6 +20,7 @@ public class PlaceCreationRequest {
     @NotNull
     private String name;
     private String description;
+    private String address;
     private Map<String, List<String>> locationDescription;
     private Map<String, List<Map<String, String>>> workingHours;
 

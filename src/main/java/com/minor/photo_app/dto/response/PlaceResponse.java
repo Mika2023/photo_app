@@ -18,6 +18,7 @@ public class PlaceResponse {
     private Long id;
     private String name;
     private String description;
+    private String address;
     private PointDto location;
     private Map<String, List<String>> locationDescription;
     private Map<String, List<Map<String, String>>> workingHours;

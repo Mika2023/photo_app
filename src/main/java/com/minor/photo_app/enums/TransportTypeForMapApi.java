@@ -24,7 +24,7 @@ public enum TransportTypeForMapApi {
                 .filter(t -> t.value.equalsIgnoreCase(value))
                 .findFirst()
                 .orElseThrow(() ->
-                        new IllegalArgumentException("Неизвестный тип транспорта: " + value)
+                        new IllegalArgumentException("Неизвестный тип передвижения: " + value)
                 );
     }
 

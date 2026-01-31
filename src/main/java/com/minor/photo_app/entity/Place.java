@@ -51,6 +51,9 @@ public class Place {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "address")
+    private String address;
+
     @Column(columnDefinition = "geometry(Point,4326)")
     private Point location;
 

@@ -1,0 +1,2 @@
+ALTER TABLE places
+ADD COLUMN address VARCHAR(1024);

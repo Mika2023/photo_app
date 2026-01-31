@@ -26,4 +26,10 @@ public class UserService {
 
         return user;
     }
+
+    public void existsByIdOrElseThrow(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new NotFoundException("Пользователь не найден");
+        }
+    }
 }
