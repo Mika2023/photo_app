@@ -1,4 +1,4 @@
-package com.minor.photo_app.config;
+package com.minor.photo_app.config.webclient;
 
 import com.minor.photo_app.properties.DoubleGisProperties;
 import lombok.RequiredArgsConstructor;
@@ -10,12 +10,14 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 @RequiredArgsConstructor
-public class WebClientConfig {
+public class DGisWebClientConfig {
+
     private final DoubleGisProperties properties;
+    private final WebClient.Builder webClientBuilder;
 
     @Bean
-    public WebClient buildDGisWebClient() {
-        return WebClient.builder()
+    public WebClient dGisWebClient() {
+        return webClientBuilder
                 .baseUrl(properties.getBaseUrl())
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();

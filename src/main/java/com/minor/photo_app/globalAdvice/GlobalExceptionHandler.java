@@ -1,6 +1,7 @@
 package com.minor.photo_app.globalAdvice;
 
 import com.minor.photo_app.dto.ErrorMessageDto;
+import com.minor.photo_app.exception.FileStorageException;
 import com.minor.photo_app.exception.MapApiException;
 import com.minor.photo_app.exception.NotFoundException;
 import com.minor.photo_app.exception.PhotoAppException;
@@ -104,6 +105,17 @@ public class GlobalExceptionHandler {
                 .setStatusCode(ex.getStatusCode().value())
                 .setMessage(ex.getMessage())
                 .setError("Ошибка API карт");
+
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
+    @ExceptionHandler(FileStorageException.class)
+    public ResponseEntity<ErrorMessageDto> handleMapApiException(FileStorageException ex) {
+        ErrorMessageDto response = new ErrorMessageDto()
+                .setTimestamp(Instant.now())
+                .setStatusCode(ex.getStatusCode().value())
+                .setMessage(ex.getMessage())
+                .setError("Ошибка файлового хранилища");
 
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }

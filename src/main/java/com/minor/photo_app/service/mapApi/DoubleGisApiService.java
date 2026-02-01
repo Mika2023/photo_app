@@ -1,4 +1,4 @@
-package com.minor.photo_app.service;
+package com.minor.photo_app.service.mapApi;
 
 import com.minor.photo_app.dto.request.mapsRequest.MapApiRequest;
 import com.minor.photo_app.dto.request.mapsRequest.Point;

@@ -38,3 +38,8 @@ gis:
   maps:
     base-url: "https://routing.api.2gis.com/routing"
     api-key: ${2GIS_API_KEY}
+
+supabase:
+  base-url: "https://lqtiftmgexxmtoohvldc.supabase.co"
+  api-key: ${SUPABASE_API_KEY}
+  bucket-name: "place_photos"
