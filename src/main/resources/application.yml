@@ -3,9 +3,9 @@ spring:
     name: fgislk-pul-backend
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5433/photo_routes
-    username: photo_user
-    password: photo_password
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
   jpa:
     show-sql: true
     hibernate:
@@ -29,7 +29,7 @@ springdoc:
 server:
   servlet:
     context-path: /
-  port: 8081
+  port: ${PORT:8081}
 
 storage:
   upload-dir: ./images
