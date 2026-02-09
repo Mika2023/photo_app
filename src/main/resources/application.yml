@@ -37,7 +37,7 @@ storage:
 gis:
   maps:
     base-url: "https://routing.api.2gis.com/routing"
-    api-key: ${2GIS_API_KEY}
+    api-key: ${TWO_GIS_API_KEY}
 
 supabase:
   base-url: "https://lqtiftmgexxmtoohvldc.supabase.co"
