@@ -22,6 +22,7 @@ import java.util.UUID;
 public class SupabaseFileStorage implements FileStorage {
 
     private static final String FULL_PATH_TO_FILE_STORAGE = "/storage/v1/object/%s/%s";
+    private static final String FULL_PATH_TO_PUBLIC_FILE_STORAGE = "/storage/v1/object/public/%s/%s";
     private final SupabaseProperties supabaseProperties;
     private final WebClient supabaseWebClient;
 
@@ -54,7 +55,7 @@ public class SupabaseFileStorage implements FileStorage {
                     .onErrorResume(e ->
                             Mono.error(new FileStorageException("Не удалось выполнить запрос к ФХ, ошибка - " + e.getMessage()))
                     )
-                    .map(supabaseResponseDto -> fileUrl)
+                    .map(supabaseResponseDto -> getPublicUriWithFileUrl(fileUrl))
                     .block();
         } catch (IOException e) {
             throw new FileStorageException("Не удалось выполнить запрос к ФХ, ошибка - " + e.getMessage());
@@ -63,6 +64,10 @@ public class SupabaseFileStorage implements FileStorage {
 
     private String getUriWithFileUrl(String fileUrl) {
         return String.format(FULL_PATH_TO_FILE_STORAGE, supabaseProperties.getBucketName(), fileUrl);
+    }
+
+    private String getPublicUriWithFileUrl(String fileUrl) {
+        return supabaseProperties.getBaseUrl() + String.format(FULL_PATH_TO_PUBLIC_FILE_STORAGE, supabaseProperties.getBucketName(), fileUrl);
     }
 
     @Override
