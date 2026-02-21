@@ -12,7 +12,7 @@ import java.util.Set;
 public interface FavoritePlaceRepository extends JpaRepository<FavoritePlace, Long> {
     Set<FavoritePlace> findAllByUser(User user);
 
-    Boolean existsByPlaceIdAndUserId(@Param("placeId") Long placeId,  @Param("userId") Long userId);
+    Boolean existsByPlaceIdAndUserId(@Param("placeId") Long placeId, @Param("userId") Long userId);
 
     void deleteByPlaceIdAndUserId(@Param("placeId") Long placeId, @Param("userId") Long userId);
 

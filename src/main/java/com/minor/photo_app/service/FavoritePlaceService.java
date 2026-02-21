@@ -4,6 +4,8 @@ import com.minor.photo_app.dto.UserPrincipal;
 import com.minor.photo_app.dto.filters.PlaceFilter;
 import com.minor.photo_app.dto.response.PlaceCardResponse;
 import com.minor.photo_app.entity.FavoritePlace;
+import com.minor.photo_app.entity.FavoritePlaceId;
+import com.minor.photo_app.entity.Place;
 import com.minor.photo_app.entity.User;
 import com.minor.photo_app.repository.FavoritePlaceRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +13,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,9 +52,15 @@ public class FavoritePlaceService {
             favoritePlaceRepository.deleteByPlaceIdAndUserId(placeId, userId);
         }
         else {
+            FavoritePlaceId favoritePlaceId = new FavoritePlaceId();
+            favoritePlaceId.setPlaceId(placeId);
+            favoritePlaceId.setUserId(userId);
+
             FavoritePlace favoritePlace = new FavoritePlace();
             favoritePlace.setUser(user);
-            favoritePlace.setPlace(placeService.getPlace(placeId));
+            Place place = placeService.getPlace(placeId);
+            favoritePlace.setPlace(place);
+            favoritePlace.setId(favoritePlaceId);
             favoritePlaceRepository.save(favoritePlace);
         }
     }
