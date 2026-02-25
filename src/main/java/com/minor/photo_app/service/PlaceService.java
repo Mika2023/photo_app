@@ -12,6 +12,7 @@ import com.minor.photo_app.entity.Category;
 import com.minor.photo_app.entity.FavoritePlace;
 import com.minor.photo_app.entity.Place;
 import com.minor.photo_app.enums.PlaceSort;
+import com.minor.photo_app.enums.TransportType;
 import com.minor.photo_app.exception.NotFoundException;
 import com.minor.photo_app.mapper.PlaceMapper;
 import com.minor.photo_app.repository.PlaceRepository;
@@ -154,6 +155,10 @@ public class PlaceService {
                     ));
         }
 
+        if (placeFilter.getTagIds() != null) {
+            specification = specification.and(PlaceSpecification.hasTags(placeFilter.getTagIds()));
+        }
+
         return getFilteredPlaces(specification,
                 placeFilter.getPage(),
                 placeFilter.getSize(),
@@ -192,6 +197,11 @@ public class PlaceService {
 
         Set<Long> placeFavoriteIds = favoritePlaceService.getFavoritePlaceIdsByUser(userPrincipal);
         return placeMapper.toResponse(place, placeFavoriteIds);
+    }
+
+    public Set<String> getPlacesLocationDescriptionByTransportType(String transportType) {
+        TransportType.fromValue(transportType);
+        return placeRepository.findStationsByTransportType(transportType);
     }
 
     @Transactional

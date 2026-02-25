@@ -20,6 +20,7 @@ public class PlaceFilter {
     private Map<TransportType, Set<String>> selectedStops;
     private WorkingHoursFilter workingHours;
     private Boolean isFavoriteByUser;
+    private Set<Long> tagIds;
 
     private PlaceSort sort;
     private Integer page;

@@ -2,6 +2,7 @@ package com.minor.photo_app.mapper;
 
 import com.minor.photo_app.dto.request.CategoryEditRequest;
 import com.minor.photo_app.dto.request.CategoryRequest;
+import com.minor.photo_app.dto.response.CategoryForFiltersResponse;
 import com.minor.photo_app.dto.response.CategoryResponse;
 import com.minor.photo_app.dto.response.CategoryShortInfoResponse;
 import com.minor.photo_app.entity.Category;
@@ -34,6 +35,9 @@ public interface CategoryMapper {
 
     Category toEntity(CategoryRequest request);
     List<Category> toEntityList(List<CategoryRequest> requests);
+
+    CategoryForFiltersResponse toFiltersResponse(Category category);
+    List<CategoryForFiltersResponse> toFiltersResponseList(List<Category> category);
 
     void updateCategoryFromRequest(CategoryEditRequest request, @MappingTarget Category category);
 

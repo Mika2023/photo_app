@@ -1,7 +1,9 @@
 package com.minor.photo_app.repository.specification;
 
 import com.minor.photo_app.entity.Category;
+import com.minor.photo_app.entity.FavoritePlace;
 import com.minor.photo_app.entity.Place;
+import com.minor.photo_app.entity.Tag;
 import com.minor.photo_app.entity.User;
 import com.minor.photo_app.enums.TransportType;
 import jakarta.persistence.criteria.Join;
@@ -42,17 +44,31 @@ public final class PlaceSpecification {
         };
     }
 
+    public static Specification<Place> hasTags(Set<Long> tagIds) {
+        return (root, query, criteriaBuilder) -> {
+            if (tagIds == null || tagIds.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+
+            Subquery<Long> subquery = query.subquery(Long.class);
+            Root<Place> subroot = subquery.from(Place.class);
+            Join<Place, Tag> placeTagJoin = subroot.join("tags");
+
+            subquery.select(subroot.get("id"))
+                    .where(
+                            criteriaBuilder.equal(subroot.get("id"), root.get("id")),
+                            placeTagJoin.get("id").in(tagIds)
+                    );
+
+            return criteriaBuilder.exists(subquery);
+        };
+    }
+
     public static Specification<Place> isFavoriteByUserId(Long userId) {
         return (root, query, criteriaBuilder) -> {
 
-            Subquery<Long> subquery = query.subquery(Long.class);
-            Root<User> subroot = subquery.from(User.class);
-            Join<User, Place> favoritePlaceJoin = subroot.join("favoritePlaces");
-
-            subquery.select(favoritePlaceJoin.get("id"))
-                    .where(criteriaBuilder.equal(subroot.get("id"), userId));
-
-            return criteriaBuilder.exists(subquery);
+            Join<Place, FavoritePlace> favoritePlaceJoin = root.join("favoritePlaceUsers");
+            return criteriaBuilder.equal(favoritePlaceJoin.get("user").get("id"), userId);
         };
     }
 

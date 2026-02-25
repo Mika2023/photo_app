@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface PlaceRepository extends JpaRepository<Place, Long>, JpaSpecificationExecutor<Place> {
@@ -35,4 +36,11 @@ public interface PlaceRepository extends JpaRepository<Place, Long>, JpaSpecific
 
     @Query(value = "SELECT location FROM places WHERE id = :id", nativeQuery = true)
     Optional<Point> findLocationById(@Param("id") Long id);
+
+    @Query(value = """
+        SELECT DISTINCT station
+        FROM places, jsonb_array_elements_text(location_description -> :transportType) AS station
+        ORDER BY station
+    """, nativeQuery = true)
+    Set<String> findStationsByTransportType(@Param("transportType") String transportType);
 }

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: fgislk-pul-backend
+    name: placesee-app
   datasource:
     driver-class-name: org.postgresql.Driver
     url: ${DB_URL}

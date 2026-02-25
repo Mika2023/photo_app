@@ -2,6 +2,7 @@ package com.minor.photo_app.service;
 
 import com.minor.photo_app.dto.request.CategoryEditRequest;
 import com.minor.photo_app.dto.request.CategoryRequest;
+import com.minor.photo_app.dto.response.CategoryForFiltersResponse;
 import com.minor.photo_app.dto.response.CategoryResponse;
 import com.minor.photo_app.dto.response.CategoryShortInfoResponse;
 import com.minor.photo_app.entity.Category;
@@ -28,6 +29,11 @@ public class CategoryService {
     public List<CategoryResponse> getCategories() {
         List<Category> categories = categoryRepository.findByParentIsNull();
         return categoryMapper.toResponseList(categories);
+    }
+
+    public List<CategoryForFiltersResponse> getCategoriesForFilters() {
+        List<Category> categories = categoryRepository.findAll();
+        return categoryMapper.toFiltersResponseList(categories);
     }
 
     public CategoryShortInfoResponse getCategoryById(Long categoryId) {

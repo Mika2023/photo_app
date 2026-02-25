@@ -8,9 +8,11 @@ import com.minor.photo_app.dto.request.PlaceUpdateRequest;
 import com.minor.photo_app.dto.response.PlaceCardResponse;
 import com.minor.photo_app.dto.response.PlaceResponse;
 import com.minor.photo_app.dto.response.PlaceShortResponse;
+import com.minor.photo_app.enums.TransportType;
 import com.minor.photo_app.service.PlaceService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/places")
@@ -49,6 +52,11 @@ public class PlaceController {
     public List<PlaceCardResponse> findPlacesNearby(@PathVariable Long placeId,
                                                     @AuthenticationPrincipal UserPrincipal userPrincipal) {
         return placeService.findPlacesNearby(placeId, userPrincipal);
+    }
+
+    @GetMapping("/filters")
+    public Set<String> findAllStationsByTransportType(@RequestParam String transportType) {
+        return placeService.getPlacesLocationDescriptionByTransportType(transportType);
     }
 
     @GetMapping("/{placeId}")

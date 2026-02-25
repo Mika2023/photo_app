@@ -2,6 +2,7 @@ package com.minor.photo_app.controller;
 
 import com.minor.photo_app.dto.request.CategoryEditRequest;
 import com.minor.photo_app.dto.request.CategoryRequest;
+import com.minor.photo_app.dto.response.CategoryForFiltersResponse;
 import com.minor.photo_app.dto.response.CategoryResponse;
 import com.minor.photo_app.dto.response.CategoryShortInfoResponse;
 import com.minor.photo_app.service.CategoryService;
@@ -28,6 +29,11 @@ public class CategoryController {
     @GetMapping
     public List<CategoryResponse> getCategories() {
         return categoryService.getCategories();
+    }
+
+    @GetMapping("/filters")
+    public List<CategoryForFiltersResponse> getCategoriesForFilters() {
+        return categoryService.getCategoriesForFilters();
     }
 
     @GetMapping("/{categoryId}")
