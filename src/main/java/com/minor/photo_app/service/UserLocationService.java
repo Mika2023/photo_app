@@ -1,5 +1,6 @@
 package com.minor.photo_app.service;
 
+import com.minor.photo_app.dto.PointDto;
 import com.minor.photo_app.dto.UserPrincipal;
 import com.minor.photo_app.dto.request.UserLocationRequest;
 import com.minor.photo_app.dto.response.UserLocationResponse;
@@ -52,5 +53,13 @@ public class UserLocationService {
         UserLocation userLocation = userLocationRepository.findByUserId(userId)
                 .orElseGet(() -> new UserLocation(userId, user, location, Instant.now()));
         return userLocation.getLocation();
+    }
+
+    @Transactional(readOnly = true)
+    public PointDto getUserLocationPointDto(UserPrincipal userPrincipal) {
+        Point location = getUserLocationPoint(userPrincipal);
+        Double lon = location.getX();
+        Double lat = location.getY();
+        return new PointDto(lon, lat);
     }
 }
