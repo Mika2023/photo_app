@@ -35,7 +35,11 @@ public class UserLocationService {
                 .createPoint(new Coordinate(request.getLongitude(), request.getLatitude()));
 
         UserLocation userLocation = userLocationRepository.findByUserId(userId)
-                .orElseGet(() -> new UserLocation(userId, user, location, Instant.now()));
+                .orElseGet(() ->
+                        new UserLocation()
+                                .setUser(user)
+                                .setLocation(location)
+                );
         userLocation.setLocation(location);
 
         UserLocation savedUserLocation = userLocationRepository.save(userLocation);
