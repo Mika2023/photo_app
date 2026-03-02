@@ -6,7 +6,9 @@ import com.minor.photo_app.dto.request.RouteRequest;
 import com.minor.photo_app.dto.request.RouteUpdateRequest;
 import com.minor.photo_app.dto.response.RouteResponse;
 import com.minor.photo_app.dto.response.RouteShortResponse;
+import com.minor.photo_app.dto.response.mapsResponse.Maneuver;
 import com.minor.photo_app.dto.response.mapsResponse.MapsApiResponse;
+import com.minor.photo_app.dto.response.mapsResponse.OutcomingPath;
 import com.minor.photo_app.dto.response.mapsResponse.ResultResponse;
 import com.minor.photo_app.entity.Place;
 import com.minor.photo_app.entity.Route;
@@ -26,6 +28,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -186,7 +190,16 @@ public class RouteService {
         }
         ResultResponse resultResponse = responseFromMaps.getResult().getFirst();
         routeMapper.updateEntity(resultResponse, route);
-        LineString maneuversLineString = DoubleGisConverter.convertManeuversToLineString(resultResponse.getManeuvers());
+
+        Maneuver beginPath = new Maneuver()
+                .setOutcomingPath(new OutcomingPath().setGeometry(List.of(resultResponse.getBeginPedestrianPath().getGeometry())));
+        Maneuver endPath = new Maneuver()
+                .setOutcomingPath(new OutcomingPath().setGeometry(List.of(resultResponse.getEndPedestrianPath().getGeometry())));
+
+        List<Maneuver> maneuvers = new ArrayList<>(List.of(beginPath));
+        maneuvers.addAll(resultResponse.getManeuvers());
+        maneuvers.add(endPath);
+        LineString maneuversLineString = DoubleGisConverter.convertManeuversToLineString(maneuvers);
         route.setPath(maneuversLineString);
     }
 }

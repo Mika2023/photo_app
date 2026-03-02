@@ -52,10 +52,14 @@ public class UserLocationService {
         User user = userService.getUserByPrincipal(userPrincipal);
 
         Point location = new GeometryFactory(new PrecisionModel(), 4326)
-                .createPoint(new Coordinate(37.6214679, 55.7546469));
+                .createPoint(new Coordinate(37.621467, 55.754646));
 
         UserLocation userLocation = userLocationRepository.findByUserId(userId)
-                .orElseGet(() -> new UserLocation(userId, user, location, Instant.now()));
+                .orElseGet(() ->
+                        new UserLocation()
+                                .setUser(user)
+                                .setLocation(location)
+                );
         return userLocation.getLocation();
     }
 
