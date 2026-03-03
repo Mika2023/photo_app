@@ -63,6 +63,11 @@ public class UserLocationService {
         return userLocation.getLocation();
     }
 
+    public Point getDefaultUserLocationPoint() {
+        return new GeometryFactory(new PrecisionModel(), 4326)
+                .createPoint(new Coordinate(37.621467, 55.754646));
+    }
+
     @Transactional(readOnly = true)
     public PointDto getUserLocationPointDto(UserPrincipal userPrincipal) {
         Point location = getUserLocationPoint(userPrincipal);

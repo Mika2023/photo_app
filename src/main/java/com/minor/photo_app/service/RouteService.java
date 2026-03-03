@@ -14,6 +14,7 @@ import com.minor.photo_app.entity.Place;
 import com.minor.photo_app.entity.Route;
 import com.minor.photo_app.entity.User;
 import com.minor.photo_app.enums.TransportTypeForMapApi;
+import com.minor.photo_app.exception.MapApiException;
 import com.minor.photo_app.exception.NotFoundException;
 import com.minor.photo_app.exception.PhotoAppException;
 import com.minor.photo_app.mapper.RouteMapper;
@@ -36,6 +37,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class RouteService {
     private final static String DEFAULT_FROM_PLACE_NAME = "Ваше местоположение";
+    private final static String DEFAULT_FROM_PLACE_NAME_CENTER_MOSCOW = "Центр Москвы";
 
     private final RouteRepository routeRepository;
     private final MapApiService mapApiService;
@@ -72,7 +74,21 @@ public class RouteService {
         TransportTypeForMapApi transportType = routeRequest.getTransportType() == null ?
                 TransportTypeForMapApi.WALKING: routeRequest.getTransportType();
 
-        parseResponseFromApi(fromPlaceLocation, toPlaceLocation, transportType, route);
+        try {
+            parseResponseFromApi(fromPlaceLocation, toPlaceLocation, transportType, route);
+        } catch (MapApiException e) {
+            if (e.getStatusCode() != null) {
+                fromPlaceLocation = userLocationService.getDefaultUserLocationPoint();
+                fromPlaceName = DEFAULT_FROM_PLACE_NAME_CENTER_MOSCOW;
+                route.setName(routeRequest.getName() == null ?
+                        createRouteName(toPlace.getName(), fromPlaceName) : routeRequest.getName());
+                route.setFromLocation(fromPlaceLocation);
+
+                parseResponseFromApi(fromPlaceLocation, toPlaceLocation, transportType, route);
+            } else {
+                throw new MapApiException(e.getMessage());
+            }
+        }
 
         Route savedRoute = routeRepository.save(route);
         return routeMapper.toDto(savedRoute);
