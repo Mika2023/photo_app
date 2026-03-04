@@ -21,6 +21,7 @@ import com.minor.photo_app.mapper.RouteMapper;
 import com.minor.photo_app.repository.RouteRepository;
 import com.minor.photo_app.service.mapApi.MapApiService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class RouteService {
     private final static String DEFAULT_FROM_PLACE_NAME = "Ваше местоположение";
@@ -47,6 +49,7 @@ public class RouteService {
     private final RouteMapper routeMapper;
 
     public RouteResponse createRoute(RouteRequest routeRequest, UserPrincipal userPrincipal) {
+        log.info("Создание маршрута для места с id {}", routeRequest.getToPlaceId());
         User user = userService.getUserByPrincipal(userPrincipal);
 
         Route route = routeMapper.toEntity(routeRequest);
@@ -101,9 +104,13 @@ public class RouteService {
                         String.format("Такого маршрута по id = %s не существует", routeId)
                 ));
 
+        log.info("Обновление маршрута с id {}", route.getId());
+
+        Long toPlaceRoute = route.getToPlace().getId();
+
         if (request.getTransportType() != null) {
             Place toPlace = null;
-            if (request.getToPlaceId() != null && !request.getToPlaceId().equals(route.getToPlace().getId())) {
+            if (request.getToPlaceId() != null && !request.getToPlaceId().equals(toPlaceRoute)) {
                 toPlace = placeService.getPlace(request.getToPlaceId());
             }
 
@@ -159,7 +166,6 @@ public class RouteService {
         if (!StringUtils.isBlank(request.getDescription())) {
             route.setDescription(request.getDescription());
         }
-        routeRepository.save(route);
         return routeMapper.toDto(route);
     }
 

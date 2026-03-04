@@ -9,6 +9,7 @@ import com.minor.photo_app.entity.UserLocation;
 import com.minor.photo_app.mapper.UserLocationMapper;
 import com.minor.photo_app.repository.UserLocationRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -20,6 +21,7 @@ import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserLocationService {
 
     private final UserLocationRepository userLocationRepository;
@@ -70,6 +72,7 @@ public class UserLocationService {
 
     @Transactional(readOnly = true)
     public PointDto getUserLocationPointDto(UserPrincipal userPrincipal) {
+        log.info("Получение геолокации пользователя");
         Point location = getUserLocationPoint(userPrincipal);
         Double lon = location.getX();
         Double lat = location.getY();
