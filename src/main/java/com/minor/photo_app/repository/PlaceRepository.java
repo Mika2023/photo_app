@@ -21,8 +21,8 @@ public interface PlaceRepository extends JpaRepository<Place, Long>, JpaSpecific
         FROM places p
         WHERE p.id <> :placeId
           AND ST_DWithin(
-                p.location::geometry,
-                ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geometry,
+                p.location::geography,
+                ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography,
                 :radiusMeters
           )
         LIMIT :limit

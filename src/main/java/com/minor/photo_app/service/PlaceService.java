@@ -51,7 +51,7 @@ public class PlaceService {
     private FavoritePlaceService favoritePlaceService;
 
     private final CategoryService categoryService;
-    private static final double RADIUS_METERS = 1000.0;
+    private static final double RADIUS_METERS = 2000.0;
     private static final int LIMIT_PLACES = 10;
 
     private Slice<PlaceCardResponse> getFilteredPlaces(Specification<Place> spec,
