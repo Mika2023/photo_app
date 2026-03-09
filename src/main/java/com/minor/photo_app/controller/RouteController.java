@@ -36,7 +36,7 @@ public class RouteController {
     public Slice<RouteShortResponse> getRoutes(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "5") int size
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
         return routeService.getRoutesByUser(userPrincipal, page, size);
     }

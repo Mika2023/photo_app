@@ -32,6 +32,7 @@ public interface RouteMapper {
     @Mapping(target = "path", source = "path", qualifiedByName = "convertLineStringToCoordinatesResponse")
     RouteResponse toDto(Route route);
 
+    @Mapping(target = "path", source = "path", qualifiedByName = "convertLineStringToCoordinatesResponse")
     RouteShortResponse toShortDto(Route route);
 
     @Named("convertDurationToMinutes")

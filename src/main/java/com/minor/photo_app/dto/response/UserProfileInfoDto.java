@@ -4,15 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RouteShortResponse {
+public class UserProfileInfoDto {
     private Long id;
-    private Instant createdAt;
-    private String name;
-    private List<CoordinateResponse> path;
+    private String avatarImageUrl;
+    private String nickname;
+    private String email;
 }
