@@ -28,6 +28,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       SUPABASE_API_KEY: ${SUPABASE_API_KEY}
       TWO_GIS_API_KEY: ${TWO_GIS_API_KEY}
+      PORT: ${PORT}
     depends_on:
       - photo_db
 
