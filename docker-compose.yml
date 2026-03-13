@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  photo_db:
+    image: postgis/postgis:16-3.4
+    container_name: photo_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    ports:
+      - "5432:5432"
+
+  photo_app:
+    build: .
+    container_name: photo_app
+    restart: unless-stopped
+    ports:
+      - "${PORT}:8080"
+    environment:
+      DB_URL: jdbc:postgresql://photo_db:5432/${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      SUPABASE_API_KEY: ${SUPABASE_API_KEY}
+      TWO_GIS_API_KEY: ${TWO_GIS_API_KEY}
+    depends_on:
+      - photo_db
+
+volumes:
+  postgres_data:
