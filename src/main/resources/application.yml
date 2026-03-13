@@ -30,6 +30,7 @@ server:
   servlet:
     context-path: /
   port: ${PORT:8081}
+  address: 0.0.0.0
 
 storage:
   upload-dir: ./images
