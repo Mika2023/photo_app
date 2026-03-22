@@ -28,7 +28,7 @@ springdoc:
 
 server:
   servlet:
-    context-path: /api
+    context-path: /
   port: ${PORT:8081}
   address: 0.0.0.0
 
