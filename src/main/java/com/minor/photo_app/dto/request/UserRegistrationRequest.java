@@ -15,14 +15,14 @@ import lombok.Setter;
 public class UserRegistrationRequest {
 
     @NotBlank
-    @Size(min = 1, max = 64)
+    @Size(min = 1, max = 64, message = "Никнейм должен быть заполнен!")
     private String nickname;
 
     @NotBlank
-    @Email
+    @Email(message = "Неверный формат почты!")
     private String email;
 
     @NotBlank
-    @Size(min = 8, max = 64)
+    @Size(min = 8, max = 64, message = "Пароль должен состоять из 8 символов и больше!")
     private String password;
 }
