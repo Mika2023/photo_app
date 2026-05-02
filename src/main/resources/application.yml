@@ -33,6 +33,7 @@ spring:
 app:
   mail:
     sender-mail: "noreply@placeapp.com"
+    real-sender-mail: ${MAIL_ADDRESS}
 
 springdoc:
   api-docs:
