@@ -9,10 +9,8 @@ import com.minor.photo_app.mapper.UserMapper;
 import com.minor.photo_app.repository.UserRepository;
 import com.minor.photo_app.service.fileStorage.FileStorage;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -60,5 +58,10 @@ public class UserService {
         }
         userRepository.save(user);
         return userMapper.toUserProfileInfoDto(user);
+    }
+
+    public Long getIdByEmailOrElseThrow(String email) {
+        return userRepository.findIdByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Аккаунт с такой почтой не найден"));
     }
 }
