@@ -29,6 +29,8 @@ services:
       SUPABASE_API_KEY: ${SUPABASE_API_KEY}
       TWO_GIS_API_KEY: ${TWO_GIS_API_KEY}
       PORT: ${PORT}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_ADDRESS: ${MAIL_ADDRESS}
     depends_on:
       - photo_db
 
