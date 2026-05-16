@@ -58,6 +58,9 @@ public class Category {
     @BatchSize(size = 20)
     private Set<Category> children = new HashSet<>();
 
+    @Column(name = "two_gis_id")
+    private Long twoGisId;
+
     public void addChild(Category child) {
         children.add(child);
         child.setParent(this);

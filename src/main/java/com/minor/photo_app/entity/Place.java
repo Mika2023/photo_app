@@ -91,4 +91,14 @@ public class Place {
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<FavoritePlace> favoritePlaceUsers = new HashSet<>();
+
+    @Column(name = "two_gis_id", unique = true)
+    private Long twoGisId;
+
+    public void addAllCategories(List<Category> categories) {
+        if (this.categories == null) {
+            this.categories = new HashSet<>();
+        }
+        this.categories.addAll(categories);
+    }
 }

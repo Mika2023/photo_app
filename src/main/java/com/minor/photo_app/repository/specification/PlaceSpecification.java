@@ -4,7 +4,6 @@ import com.minor.photo_app.entity.Category;
 import com.minor.photo_app.entity.FavoritePlace;
 import com.minor.photo_app.entity.Place;
 import com.minor.photo_app.entity.Tag;
-import com.minor.photo_app.entity.User;
 import com.minor.photo_app.enums.TransportType;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;

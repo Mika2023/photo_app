@@ -35,6 +35,14 @@ app:
     sender-mail: "noreply@placeapp.com"
     real-sender-mail: ${MAIL_ADDRESS}
 
+scheduler:
+  sync-cron: "0 0 3 * * SUN"
+
+logging:
+  level:
+    reactor.netty.http.client: DEBUG
+    org.springframework.web.reactive.function.client.ExchangeFunctions: TRACE
+
 springdoc:
   api-docs:
     path: /v3/api-docs
@@ -55,6 +63,7 @@ gis:
   maps:
     base-url: "https://routing.api.2gis.com/routing"
     api-key: ${TWO_GIS_API_KEY}
+    items-url: "https://catalog.api.2gis.com"
 
 supabase:
   base-url: "https://lqtiftmgexxmtoohvldc.supabase.co"

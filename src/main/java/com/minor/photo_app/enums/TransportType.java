@@ -13,7 +13,8 @@ public enum TransportType {
     METRO("Метро"),
     BUS("Автобус"),
     TRAM("Трамвай"),
-    TRAIN("Поезд");
+    TRAIN("Поезд"),
+    SUBURBAN_TRAIN("Пригородный поезд");
 
     private final String type;
 
@@ -32,4 +33,11 @@ public enum TransportType {
         return type;
     }
 
+    public static String getRussianNameByType(String enType) {
+        return Arrays.stream(values())
+                .filter(t -> t.name().equalsIgnoreCase(enType))
+                .findFirst()
+                .map(TransportType::getType)
+                .orElse(null);
+    }
 }

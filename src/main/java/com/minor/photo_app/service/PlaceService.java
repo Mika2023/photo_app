@@ -8,6 +8,7 @@ import com.minor.photo_app.dto.request.PlaceUpdateRequest;
 import com.minor.photo_app.dto.response.PlaceCardResponse;
 import com.minor.photo_app.dto.response.PlaceResponse;
 import com.minor.photo_app.dto.response.PlaceShortResponse;
+import com.minor.photo_app.dto.response.mapsResponse.items.MapsPlaceResponse;
 import com.minor.photo_app.entity.Category;
 import com.minor.photo_app.entity.FavoritePlace;
 import com.minor.photo_app.entity.Place;
@@ -17,10 +18,12 @@ import com.minor.photo_app.exception.NotFoundException;
 import com.minor.photo_app.mapper.PlaceMapper;
 import com.minor.photo_app.repository.PlaceRepository;
 import com.minor.photo_app.repository.specification.PlaceSpecification;
+import com.minor.photo_app.utils.NumberUtils;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -36,8 +39,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -314,5 +321,53 @@ public class PlaceService {
     public List<PlaceShortResponse> getAllPlaces() {
         List<Place> places = placeRepository.findAll();
         return placeMapper.toShortResponseList(places);
+    }
+
+    public void syncPlacesFromMaps(List<MapsPlaceResponse> placesFromMaps) {
+        List<MapsPlaceResponse> mapsPlaceResponseFiltered = placesFromMaps.stream()
+                .filter(placeFromMaps ->
+                        Objects.nonNull(placeFromMaps) &&
+                                StringUtils.isNotBlank(placeFromMaps.getId()) &&
+                                Objects.nonNull(placeFromMaps.getPoint())
+                        )
+                .toList();
+
+        List<Long> placeFromMapsIds = mapsPlaceResponseFiltered.stream()
+                .map(placeFromMaps -> NumberUtils.parseLongOrNull(placeFromMaps.getId()))
+                .filter(Objects::nonNull)
+                .toList();
+
+        Set<Long> rubricIds = mapsPlaceResponseFiltered.stream()
+                .map(MapsPlaceResponse::getRubrics)
+                .flatMap(Collection::stream)
+                .filter(rubricResp -> Objects.nonNull(rubricResp) && StringUtils.isNotBlank(rubricResp.getId()))
+                .map(rubricResp -> NumberUtils.parseLongOrNull(rubricResp.getId()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        Map<Long, List<Category>> twoGisIdToCategory = categoryService.getRubricIdToCategory(rubricIds);
+
+        List<Place> existingPlaces = placeRepository.findByTwoGisIdIn(placeFromMapsIds);
+
+        Map<Long, Place> existingPlaceToTwoGisId = existingPlaces.stream()
+                .collect(Collectors.toMap(Place::getTwoGisId, p -> p));
+
+        List<Place> placesToSave = mapsPlaceResponseFiltered.stream()
+                .map(placeFromApi -> {
+                    Place placeEntity = existingPlaceToTwoGisId.getOrDefault(NumberUtils.parseLongOrNull(placeFromApi.getId()), new Place());
+
+                    placeMapper.updatePlaceFromApi(placeFromApi, placeEntity);
+
+                    placeFromApi.getRubrics().stream()
+                            .map(rubricResponse -> NumberUtils.parseLongOrNull(rubricResponse.getId()))
+                            .filter(Objects::nonNull)
+                            .map(rubric -> twoGisIdToCategory.getOrDefault(rubric, null))
+                            .filter(Objects::nonNull)
+                            .forEach(placeEntity::addAllCategories);
+
+                    return placeEntity;
+                })
+                .toList();
+
+        placeRepository.saveAll(placesToSave);
     }
 }

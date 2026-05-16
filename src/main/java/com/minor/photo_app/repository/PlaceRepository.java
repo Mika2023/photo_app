@@ -2,6 +2,7 @@ package com.minor.photo_app.repository;
 
 import com.minor.photo_app.entity.Place;
 import org.locationtech.jts.geom.Point;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -43,4 +44,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long>, JpaSpecific
         ORDER BY station
     """, nativeQuery = true)
     Set<String> findStationsByTransportType(@Param("transportType") String transportType);
+
+    @EntityGraph(attributePaths = {"categories"})
+    List<Place> findByTwoGisIdIn(List<Long> twoGisIds);
 }

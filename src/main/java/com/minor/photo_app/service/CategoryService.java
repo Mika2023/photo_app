@@ -10,13 +10,17 @@ import com.minor.photo_app.exception.NotFoundException;
 import com.minor.photo_app.mapper.CategoryMapper;
 import com.minor.photo_app.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -141,6 +145,26 @@ public class CategoryService {
                 .orElseThrow(() -> new NotFoundException(String.format("Категории с таким id = %d не существует",
                         categoryId)));
         categoryRepository.delete(category);
+    }
+
+    public Set<String> getCategoryTwoGisIds() {
+        return categoryRepository.findAllTwoGisIds().stream()
+                .map(String::valueOf)
+                .collect(Collectors.toSet());
+    }
+
+    public Map<Long, List<Category>> getRubricIdToCategory(Set<Long> rubricIds) {
+        if (CollectionUtils.isEmpty(rubricIds)) {
+            return Collections.emptyMap();
+        }
+
+        List<Category> categories = categoryRepository.getByTwoGisIdIn(rubricIds);
+        if (CollectionUtils.isEmpty(categories)) {
+            return Collections.emptyMap();
+        }
+
+        return categories.stream()
+                .collect(Collectors.groupingBy(Category::getTwoGisId));
     }
 
     private void extendCategoryListByParents(Category category, Set<Category> result) {

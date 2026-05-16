@@ -8,4 +8,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class DoubleGisProperties {
     private String baseUrl;
     private String apiKey;
+    private String itemsUrl;
 }

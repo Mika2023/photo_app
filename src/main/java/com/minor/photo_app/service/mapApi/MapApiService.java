@@ -1,7 +1,10 @@
 package com.minor.photo_app.service.mapApi;
 
 import com.minor.photo_app.dto.response.mapsResponse.MapsApiResponse;
+import com.minor.photo_app.dto.response.mapsResponse.items.MapsItemsResponse;
 import com.minor.photo_app.enums.TransportTypeForMapApi;
+
+import java.util.Set;
 
 public interface MapApiService {
     MapsApiResponse buildRoute(Double fromLat,
@@ -9,4 +12,6 @@ public interface MapApiService {
                                Double toLat,
                                Double toLon,
                                TransportTypeForMapApi transportType);
+
+    MapsItemsResponse getPlaces(Set<String> categoryIds);
 }

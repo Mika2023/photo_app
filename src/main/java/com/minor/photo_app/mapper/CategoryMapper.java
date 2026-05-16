@@ -6,7 +6,6 @@ import com.minor.photo_app.dto.response.CategoryForFiltersResponse;
 import com.minor.photo_app.dto.response.CategoryResponse;
 import com.minor.photo_app.dto.response.CategoryShortInfoResponse;
 import com.minor.photo_app.entity.Category;
-import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
