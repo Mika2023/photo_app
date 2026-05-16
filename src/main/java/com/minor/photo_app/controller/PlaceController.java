@@ -9,6 +9,7 @@ import com.minor.photo_app.dto.response.PlaceCardResponse;
 import com.minor.photo_app.dto.response.PlaceResponse;
 import com.minor.photo_app.dto.response.PlaceShortResponse;
 import com.minor.photo_app.service.PlaceService;
+import com.minor.photo_app.service.RecommendationAlgorithmService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
@@ -95,5 +96,10 @@ public class PlaceController {
     @GetMapping
     public List<PlaceShortResponse> getAllPlaces() {
         return placeService.getAllPlaces();
+    }
+
+    @GetMapping("/recommendations")
+    public List<PlaceCardResponse> getRecommendations(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        return placeService.getRecommendedPlaces(userPrincipal);
     }
 }

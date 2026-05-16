@@ -17,12 +17,14 @@ import com.minor.photo_app.enums.TransportType;
 import com.minor.photo_app.exception.NotFoundException;
 import com.minor.photo_app.mapper.PlaceMapper;
 import com.minor.photo_app.repository.PlaceRepository;
+import com.minor.photo_app.repository.UserRepository;
 import com.minor.photo_app.repository.specification.PlaceSpecification;
 import com.minor.photo_app.utils.NumberUtils;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -49,17 +51,22 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PlaceService {
+    private static final double RADIUS_METERS = 2000.0;
+    private static final double RADIUS_METERS_EXTENDED = 15000.0;
+    private static final int LIMIT_PLACES = 10;
+    private static final int LIMIT_PLACES_EXTENDED = 20;
+
     private final PlaceMapper placeMapper;
     private final PlaceRepository placeRepository;
     private final UserLocationService userLocationService;
+    private final UserRepository userRepository;
+    private final CategoryService categoryService;
 
     @Autowired
     @Lazy
     private FavoritePlaceService favoritePlaceService;
-
-    private final CategoryService categoryService;
-    private static final double RADIUS_METERS = 2000.0;
-    private static final int LIMIT_PLACES = 10;
+    @Autowired
+    private RecommendationAlgorithmService recommendationAlgorithmService;
 
     private Slice<PlaceCardResponse> getFilteredPlaces(Specification<Place> spec,
                                                       Integer page,
@@ -195,6 +202,16 @@ public class PlaceService {
                 LIMIT_PLACES);
 
         return getPlaceCardResponses(userPrincipal, places);
+    }
+
+    public List<Place> findAllPlacesNearbyNotKnown(Set<Long> knownPlaceIds, Point userLocation) {
+        Set<Long> placeIds = placeRepository.findPlacesNearbyWithCategories(
+                knownPlaceIds,
+                userLocation.getY(),
+                userLocation.getX(),
+                RADIUS_METERS_EXTENDED,
+                LIMIT_PLACES_EXTENDED);
+        return placeRepository.findAllByIdIn(placeIds);
     }
 
     @Transactional(readOnly = true)
@@ -369,5 +386,21 @@ public class PlaceService {
                 .toList();
 
         placeRepository.saveAll(placesToSave);
+    }
+
+    public List<PlaceCardResponse> getRecommendedPlaces(UserPrincipal userPrincipal) {
+        Point userLocation = userLocationService.getUserLocationPoint(userPrincipal);
+        Long userId = userPrincipal.getId();
+
+        Set<Long> knownPlaceIds = userRepository.getKnownPlaces(userId);
+        List<Place> unVisitedPlaces = findAllPlacesNearbyNotKnown(knownPlaceIds, userLocation);
+
+        List<Place> recommendedPlaces = recommendationAlgorithmService.getRecommendedPlaces(userId, userLocation, unVisitedPlaces);
+
+        if (CollectionUtils.isEmpty(recommendedPlaces)) {
+            recommendedPlaces = placeRepository.findAllWithPhotos();
+        }
+
+        return getPlaceCardResponses(userPrincipal, recommendedPlaces);
     }
 }

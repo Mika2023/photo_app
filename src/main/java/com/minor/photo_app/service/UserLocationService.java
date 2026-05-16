@@ -48,8 +48,12 @@ public class UserLocationService {
 
     @Transactional(readOnly = true)
     public Point getUserLocationPoint(UserPrincipal userPrincipal) {
-        Long userId = userPrincipal.getId();
         User user = userService.getUserByPrincipal(userPrincipal);
+        return getPointByUser(user);
+    }
+
+    public Point getPointByUser(User user) {
+        Long userId = user.getId();
 
         Point location = new GeometryFactory(new PrecisionModel(), 4326)
                 .createPoint(new Coordinate(37.621467, 55.754646));

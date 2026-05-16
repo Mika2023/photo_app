@@ -38,11 +38,6 @@ app:
 scheduler:
   sync-cron: "0 0 3 * * SUN"
 
-logging:
-  level:
-    reactor.netty.http.client: DEBUG
-    org.springframework.web.reactive.function.client.ExchangeFunctions: TRACE
-
 springdoc:
   api-docs:
     path: /v3/api-docs

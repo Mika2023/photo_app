@@ -35,6 +35,24 @@ public interface PlaceRepository extends JpaRepository<Place, Long>, JpaSpecific
                                  @Param("radiusMeters") double radiusMeters,
                                  @Param("limit") int limit);
 
+    @Query(value = """
+        SELECT p.id
+        FROM places p
+        WHERE (:placesId IS NULL OR p.id NOT IN (:placesId))
+          AND ST_DWithin(
+                p.location::geography,
+                ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography,
+                :radiusMeters
+          )
+        LIMIT :limit
+        """,
+            nativeQuery = true)
+    Set<Long> findPlacesNearbyWithCategories(@Param("placesId") Set<Long> placesId,
+                                 @Param("lat") double lat,
+                                 @Param("lon") double lon,
+                                 @Param("radiusMeters") double radiusMeters,
+                                 @Param("limit") int limit);
+
     @Query(value = "SELECT location FROM places WHERE id = :id", nativeQuery = true)
     Optional<Point> findLocationById(@Param("id") Long id);
 
@@ -47,4 +65,10 @@ public interface PlaceRepository extends JpaRepository<Place, Long>, JpaSpecific
 
     @EntityGraph(attributePaths = {"categories"})
     List<Place> findByTwoGisIdIn(List<Long> twoGisIds);
+
+    @EntityGraph(attributePaths = {"categories", "tags", "photos"})
+    List<Place> findAllByIdIn(Set<Long> ids);
+
+    @EntityGraph(attributePaths = {"photos"})
+    List<Place> findAllWithPhotos();
 }
