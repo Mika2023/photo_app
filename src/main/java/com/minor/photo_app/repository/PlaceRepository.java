@@ -69,6 +69,8 @@ public interface PlaceRepository extends JpaRepository<Place, Long>, JpaSpecific
     @EntityGraph(attributePaths = {"categories", "tags", "photos"})
     List<Place> findAllByIdIn(Set<Long> ids);
 
-    @EntityGraph(attributePaths = {"photos"})
+    @Query("SELECT DISTINCT p " +
+            "FROM Place p " +
+            "LEFT JOIN FETCH p.photos")
     List<Place> findAllWithPhotos();
 }
