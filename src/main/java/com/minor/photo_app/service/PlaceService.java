@@ -345,7 +345,8 @@ public class PlaceService {
                 .filter(placeFromMaps ->
                         Objects.nonNull(placeFromMaps) &&
                                 StringUtils.isNotBlank(placeFromMaps.getId()) &&
-                                Objects.nonNull(placeFromMaps.getPoint())
+                                Objects.nonNull(placeFromMaps.getPoint()) &&
+                                StringUtils.isNotBlank(placeFromMaps.getFullAddressName())
                         )
                 .toList();
 

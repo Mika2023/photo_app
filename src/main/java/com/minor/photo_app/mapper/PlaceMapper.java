@@ -7,6 +7,7 @@ import com.minor.photo_app.dto.request.PlaceUpdateRequest;
 import com.minor.photo_app.dto.response.PlaceCardResponse;
 import com.minor.photo_app.dto.response.PlaceResponse;
 import com.minor.photo_app.dto.response.PlaceShortResponse;
+import com.minor.photo_app.dto.response.mapsResponse.items.AttractionsResponse;
 import com.minor.photo_app.dto.response.mapsResponse.items.MapsPlaceResponse;
 import com.minor.photo_app.dto.response.mapsResponse.items.NearestStationsResponse;
 import com.minor.photo_app.dto.response.mapsResponse.items.PeriodResponse;
@@ -79,6 +80,7 @@ public interface PlaceMapper {
     @Mapping(target = "location", source = "point")
     @Mapping(target = "workingHours", source = "schedule", qualifiedByName = "toWorkingHours")
     @Mapping(target = "locationDescription", source = "links.nearestStations", qualifiedByName = "toLocationDescription")
+    @Mapping(target = "description", source = "links.attractions", qualifiedByName = "toDescription")
     void updatePlaceFromApi(MapsPlaceResponse responseFromApi, @MappingTarget Place place);
 
     @Named("toFavoritePlace")
@@ -149,6 +151,19 @@ public interface PlaceMapper {
                     });
         }
         return locationDescription;
+    }
+
+    @Named("toDescription")
+    default String toDescription(List<AttractionsResponse> attractions) {
+        if (CollectionUtils.isEmpty(attractions)) {
+            return null;
+        }
+
+        return attractions.stream()
+                .filter(attraction -> Objects.nonNull(attraction) && StringUtils.isNotBlank(attraction.getDescription()))
+                .map(AttractionsResponse::getDescription)
+                .findFirst()
+                .orElse(null);
     }
 
     default Map<String, String> convertPeriodToMap(PeriodResponse period) {
