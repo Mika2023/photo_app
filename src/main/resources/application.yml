@@ -74,3 +74,4 @@ minio:
   access-key: ${MINIO_LOGIN}
   secret-key: ${MINIO_PASSWORD}
   bucket-name: place-photos
+  public-url: ${MINIO_PUBLIC_URL}

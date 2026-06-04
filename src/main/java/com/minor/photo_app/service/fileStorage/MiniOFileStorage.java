@@ -74,7 +74,7 @@ public class MiniOFileStorage implements FileStorage {
     }
 
     private String buildPublicUrl(String fileName) {
-        return String.format(PUBLIC_LINK_TO_IMAGE, minioProperties.getUrl(), minioProperties.getBucketName(), fileName);
+        return String.format(PUBLIC_LINK_TO_IMAGE, minioProperties.getPublicUrl(), minioProperties.getBucketName(), fileName);
     }
 
     private String findPathToFileInnerBucket(String fileUrl) {
