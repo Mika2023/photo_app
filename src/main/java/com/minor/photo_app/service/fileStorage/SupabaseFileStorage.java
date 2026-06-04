@@ -4,7 +4,6 @@ import com.minor.photo_app.dto.response.supabaseResponse.SupabaseResponseDto;
 import com.minor.photo_app.exception.FileStorageException;
 import com.minor.photo_app.properties.SupabaseProperties;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
@@ -21,7 +20,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Service
-@Primary
 @RequiredArgsConstructor
 public class SupabaseFileStorage implements FileStorage {
 

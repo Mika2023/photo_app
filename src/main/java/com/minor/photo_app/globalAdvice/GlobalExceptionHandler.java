@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
 
         ErrorMessageDto response = new ErrorMessageDto()
                 .setTimestamp(Instant.now())
-                .setMessage(ex.getMessage())
+                .setMessage(String.join(", ", errors.values()))
                 .setError("Ошибка валидации")
                 .setStatusCode(HttpStatus.BAD_REQUEST.value())
                 .setFieldErrors(errors);

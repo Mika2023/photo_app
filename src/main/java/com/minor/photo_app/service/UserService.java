@@ -7,7 +7,7 @@ import com.minor.photo_app.entity.User;
 import com.minor.photo_app.exception.NotFoundException;
 import com.minor.photo_app.mapper.UserMapper;
 import com.minor.photo_app.repository.UserRepository;
-import com.minor.photo_app.service.fileStorage.FileStorage;
+import com.minor.photo_app.service.fileStorage.factory.FileStorageFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final FileStorage fileStorage;
+    private final FileStorageFactory fileStorageFactory;
 
     public User getUserByPrincipal(UserPrincipal userPrincipal) {
         if (userPrincipal == null) {
@@ -53,7 +53,7 @@ public class UserService {
         User user = getUserByPrincipal(userPrincipal);
         userMapper.updateUser(user, userEditRequest);
         if (profileImage != null) {
-            String imageUrl = fileStorage.saveFile(profileImage);
+            String imageUrl = fileStorageFactory.getFileStorageToSave().saveFile(profileImage);
             user.setAvatarImageUrl(imageUrl);
         }
         userRepository.save(user);

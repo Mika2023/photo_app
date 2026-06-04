@@ -18,6 +18,10 @@ spring:
     change-log: classpath:/db/master.xml
   jackson:
     default-property-inclusion: non_null
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   mail:
     host: smtp.gmail.com
     port: 587
@@ -64,3 +68,9 @@ supabase:
   base-url: "https://lqtiftmgexxmtoohvldc.supabase.co"
   api-key: ${SUPABASE_API_KEY}
   bucket-name: "place_photos"
+
+minio:
+  url: ${MINIO_URL:http://localhost:9000}
+  access-key: ${MINIO_LOGIN}
+  secret-key: ${MINIO_PASSWORD}
+  bucket-name: place-photos

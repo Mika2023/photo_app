@@ -10,7 +10,7 @@ import com.minor.photo_app.exception.NotFoundException;
 import com.minor.photo_app.exception.PhotoAppException;
 import com.minor.photo_app.mapper.PhotoMapper;
 import com.minor.photo_app.repository.PhotoRepository;
-import com.minor.photo_app.service.fileStorage.FileStorage;
+import com.minor.photo_app.service.fileStorage.factory.FileStorageFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class PhotoService {
     private final UserService userService;
     private final PlaceService placeService;
     private final PhotoMapper photoMapper;
-    private final FileStorage fileStorage;
+    private final FileStorageFactory fileStorageFactory;
 
     @Transactional(readOnly = true)
     public Slice<PhotoResponse> getPhotosByUser(UserPrincipal userPrincipal) {
@@ -38,7 +38,7 @@ public class PhotoService {
         User user = userService.getUserByPrincipal(userPrincipal);
         Place place = placeService.getPlace(request.getPlaceId());
 
-        String imageUrl = fileStorage.saveFile(image);
+        String imageUrl = fileStorageFactory.getFileStorageToSave().saveFile(image);
 
         Photo photo = photoMapper.toEntity(request);
         photo.setUser(user);
@@ -55,7 +55,9 @@ public class PhotoService {
     public void deletePhoto(Long photoId) {
         Photo photo = photoRepository.findById(photoId).orElseThrow(() ->
                 new NotFoundException(String.format("Фото с id = %s не найдено", photoId)));
-        fileStorage.deleteFile(photo.getImageUrl());
+
+        String imageUrl = photo.getImageUrl();
+        fileStorageFactory.getFileStorageByUrl(imageUrl).deleteFile(imageUrl);
         photoRepository.delete(photo);
     }
 
